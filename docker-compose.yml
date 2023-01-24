@@ -1,0 +1,25 @@
+version: "3"
+services:
+  listener:
+    build: ./listener
+    ports:
+      - "8080:80"
+    depends_on:
+      - redis
+    environment:
+      - AUTH_USER=${AUTH_USER:-user}
+      - AUTH_PASSWORD=${AUTH_PASSWORD:-pwd}
+      - REDIS_ADDR=${REDIS_ADDR:-redis:6379}
+      - REDIS_TOPIC=${REDIS_TOPIC:-core-tech}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_pwd}
+  redis:
+    image: redis/redis-stack-server:latest
+    command: redis-server --save "" --appendonly no --requirepass redis_pwd
+    ports:
+      - "6379"
+    volumes:
+        - ./devops/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    restart: always
+   
+ 
+

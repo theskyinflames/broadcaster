@@ -33,7 +33,7 @@ func NewWSConversationHandlerBasic(mh app.MessageHandler, dr DataReader, l *log.
 
 // Handle implements the WSConversationHandler interface
 func (w WSConversationHandlerBasic) Handle(ctx context.Context, conn net.Conn) error {
-	w.l.Printf("client has open a new ws connection\n")
+	w.l.Printf("broadcaster has open a new ws connection\n")
 	for {
 		select {
 		case <-ctx.Done():
@@ -51,15 +51,15 @@ func (w WSConversationHandlerBasic) Handle(ctx context.Context, conn net.Conn) e
 	}
 }
 
+// ReceiveMessage receives messages from ws connection and pass them to the messages handler
 func (w WSConversationHandlerBasic) ReceiveMessage(ctx context.Context, conn net.Conn) (connClosed bool, err error) {
-	// b, op, err := wsutil.ReadClientData(conn)
 	b, op, err := w.dr(conn)
 	if err != nil {
 		if errors.Is(err, io.EOF) {
-			w.l.Printf("client has closed ws connection\n")
+			w.l.Printf("broadcaster has closed ws connection\n")
 			return true, nil
 		}
-		logErr(w.l, "reading client data", err)
+		logErr(w.l, "reading broadcaster message from ws connection", err)
 		return false, err
 	}
 	msg := string(b)
@@ -70,9 +70,5 @@ func (w WSConversationHandlerBasic) ReceiveMessage(ctx context.Context, conn net
 			return false, err
 		}
 	}
-	//err = wsutil.WriteServerMessage(conn, op, msg)
-	//if err != nil {
-	//	// handle error
-	//}
 	return false, nil
 }

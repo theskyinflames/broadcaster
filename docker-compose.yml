@@ -12,6 +12,16 @@ services:
       - REDIS_ADDR=${REDIS_ADDR:-redis:6379}
       - REDIS_TOPIC=${REDIS_TOPIC:-core-tech}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_pwd}
+  publisher:
+    build: ./publisher
+    ports:
+      - "8081:81"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_ADDR=${REDIS_ADDR:-redis:6379}
+      - REDIS_TOPIC=${REDIS_TOPIC:-core-tech}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_pwd}
   redis:
     image: redis/redis-stack-server:latest
     command: redis-server --save "" --appendonly no --requirepass redis_pwd

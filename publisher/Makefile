@@ -3,8 +3,12 @@ GOPATH := $(go env GOPATH)
 default: test-unit
 
 test-unit:
-	go test -v -race -count=1 ./listener/internal/...
-	go test -v -race -count=1 ./publisher/internal/...
+	go test -v -race -count=1 ./internal/...
+
+lint:
+	golangci-lint run
+	revive -config ./revive.toml
+	go mod tidy -v && git --no-pager diff --quiet go.mod go.sum
 
 tools: tool-golangci-lint tool-fumpt tool-moq
 
@@ -19,14 +23,4 @@ tool-fumpt:
 
 tool-moq:
 	go install github.com/matryer/moq
-
-docker-build:
-	docker build --no-cache -t listener listener/.
-
-docker-run: docker-build
-	docker-compose up -d
-
-docker-logs:
-	docker logs -f core-tech-listener-1
-
 

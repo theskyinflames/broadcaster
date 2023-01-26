@@ -8,13 +8,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
-
 	"theskyinflames/core-tech/publisher/internal/app"
 	"theskyinflames/core-tech/publisher/internal/domain"
+	"theskyinflames/core-tech/publisher/internal/infra/redis"
+
 	api "theskyinflames/core-tech/publisher/internal/infra/http"
 	httpx "theskyinflames/core-tech/publisher/internal/infra/http"
-	"theskyinflames/core-tech/publisher/internal/infra/redis"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -69,7 +68,6 @@ func main() {
 	go func() {
 		s := <-sig
 		cancel()
-		const timeout = 1 * time.Second // give time to finish conversations
 		l.Printf("signal %q received; listener is shutting down", s.String())
 	}()
 

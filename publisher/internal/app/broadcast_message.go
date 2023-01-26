@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-
 	"theskyinflames/core-tech/publisher/internal/domain"
 
 	"github.com/theskyinflames/cqrs-eda/pkg/cqrs"
@@ -47,7 +46,7 @@ func (ch BroadcastMessage) Handle(ctx context.Context, cmd cqrs.Command) ([]even
 	}
 
 	ch.subscribers.Stream(func(s domain.Subscriber) {
-		ch.broadcaster(s, co.Msg)
+		_ = ch.broadcaster(s, co.Msg)
 	})
 
 	return []events.Event{NewMessageBroadcastedEvent(co.Msg)}, nil

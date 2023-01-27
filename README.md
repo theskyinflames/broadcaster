@@ -88,6 +88,10 @@ The two services includes unit tests:
     make test-unit
 ```
 
+## CI 
+
+I've added an CI action to pass the unit test for each pushing to repo.
+
 ## Repo layout
 
 * assets - images of this document

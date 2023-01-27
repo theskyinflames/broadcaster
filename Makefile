@@ -2,10 +2,6 @@ GOPATH := $(go env GOPATH)
 
 default: test-unit
 
-test-unit:
-	go test -v -race -count=1 ./listener/internal/...
-	go test -v -race -count=1 ./publisher/internal/...
-
 tools: tool-golangci-lint tool-fumpt tool-moq
 
 tool-golangci-lint:
@@ -29,4 +25,7 @@ docker-run: docker-build
 docker-logs:
 	docker-compose logs -f
 
+test-unit:
+	cd ./listener;go test -v -race -count=1 ./internal/...
+	cd ./publisher;go test -v -race -count=1 ./internal/...
 

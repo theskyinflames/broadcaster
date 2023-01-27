@@ -27,6 +27,6 @@ docker-run: docker-build
 	docker-compose up -d
 
 docker-logs:
-	docker logs -f core-tech-listener-1
+	docker-compose logs -f
 
 

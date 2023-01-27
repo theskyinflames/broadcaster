@@ -16,9 +16,20 @@ This code challenge consist on to implement two services following these instruc
 Note, this is your chance to impress us, take this opportunity to show us what you can do! You can include authentication, use any CI, container based deployment or whatever you think will grab our attention.
 ```
 
+## Big Picture
+
+I've implemented two services:
+
+* **Service 1/Listener**: This service is in charge of receiving messages to be broadcasted to subscribers, and publish them to a message queue.
+
+* **Service 2/Publisher**: This service is in charge of accepting subscribers, and reading messages from the message queue and broadcast them to the subscribers.
+
+![big picture](./assets/broadcaster.png)
+
 ## Architecture
 
 To implement the two services, I've applied these architectural patterns:
+
 * Basic Auth (service 1)
 * Hexagonal architecture (services 1 and 2)
 * CQRS (service 2)
@@ -29,7 +40,6 @@ To implement the two services, I've applied these architectural patterns:
 There is a Make file in the root for that. Only do:
 
 ```sh
-  make docker-build
   make docker-run
   make docker-logs
 ```
@@ -42,7 +52,7 @@ These commands will start three container:
 
 * A publisher service (second service) in charge of read messages from the messages queue and broadcast them to the subscribers.
 
-## How to run it
+## How to try it
 
 1. First open a websocket connection to the first service. To do that I use the [websocat tool](https://github.com/vi/websocat) This service uses Basic-Authorization (by default user/pwd)j
 

@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: listener
+spec:
+  selector:
+    app: listener
+  type: ClusterIP
+  ports:
+    - name: listener-port
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broadcaster-listener
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: listener
+  template:
+    metadata:
+      labels:
+        app: listener
+    spec:
+      containers:
+      - image: jaumearus/broadcaster-listener:latest
+        name: broadcaster-listener
+        ports:
+        - containerPort: 80
+        env:
+        - name: AUTH_USER
+          valueFrom:
+            secretKeyRef:
+              name: listener-secrets
+              key: auth.user
+        - name: AUTH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: listener-secrets
+              key: auth.user
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: listener-secrets
+              key: redis.password
+        - name: REDIS_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: listener-configmap
+              key: redis.addr
+        - name: REDIS_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: listener-configmap
+              key: redis.topic
+        resources:
+            limits:
+              cpu: "1"
+              memory: "100M"
+      restartPolicy: Always

@@ -35,7 +35,7 @@ To implement the two services, I've applied these architectural patterns:
 * CQRS (service 2)
 * Event-Driven (service 2)
 
-## How to start it locally
+## How to start it locally with docker-compose
 
 There is a Make file in the root for that. Only do:
 
@@ -51,6 +51,41 @@ These commands will start three container:
 * A listener service (first service) in charge of receive messages by a websocket connection and push them to the message queue (Redis).
 
 * A publisher service (second service) in charge of read messages from the messages queue and broadcast them to the subscribers.
+
+## How to deploy it to local k8s cluster with Minikube
+These are the steps to deploy the broadcaster to a local k8s:
+
+1. Install and configure [Minikube](https://kubernetes.io/docs/tutorials/hello-minikube)
+
+2. Install [kubctl tool](https://kubernetes.io/docs/tasks/tools/)
+
+3. Start Minikube
+
+```sh
+  minikube start
+```
+
+4. Deploy k8s objects
+
+```sh
+  devops/k8s/deploy.sh
+````
+
+5. Start port forwards to listener and publisher services
+
+```sh
+  ﬌ kubectl port-forward service/listener 8080:80
+  Forwarding from 127.0.0.1:8080 -> 80
+  Forwarding from [::1]:8080 -> 80
+  Handling connection for 8080
+```
+
+```sh
+  ﬌ kubectl port-forward service/publisher 8081:81
+  Forwarding from 127.0.0.1:8081 -> 81
+  Forwarding from [::1]:8081 -> 81
+  Handling connection for 8081
+```
 
 ## How to try it
 

@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: publisher
+spec:
+  selector:
+    app: publisher
+  type: ClusterIP
+  ports:
+    - name: publisher-port
+      protocol: TCP
+      port: 81
+      targetPort: 81
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broadcaster-publisher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: publisher
+  template:
+    metadata:
+      labels: 
+        app: publisher
+    spec:
+      containers:
+        - image: jaumearus/broadcaster-publisher:latest
+          name: broadcaster-publisher
+          ports:
+          - containerPort: 81
+          env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: publisher-secrets
+                key: redis.password
+          - name: REDIS_ADDR
+            valueFrom:
+              configMapKeyRef:
+                name: publisher-configmap
+                key: redis.addr
+          - name: REDIS_TOPIC
+            valueFrom:
+              configMapKeyRef:
+                name: publisher-configmap
+                key: redis.topic
+          resources:
+            limits:
+              cpu: "1"
+              memory: "100M"
+      restartPolicy: Always

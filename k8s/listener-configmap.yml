@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: listener-configmap
+data:
+  redis.addr: redis:6379
+  redis.topic: core-tech

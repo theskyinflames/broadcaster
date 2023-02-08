@@ -18,6 +18,11 @@ tool-moq:
 
 docker-build:
 	docker build --no-cache -t listener listener/.
+	docker build --no-cache -t publisher publisher/.
+
+docker-hub-push:
+	docker push jaumearus/broadcaster-listener:latest
+	docker push jaumearus/broadcaster-publisher:latest
 
 docker-run: docker-build
 	docker-compose up -d
@@ -25,7 +30,14 @@ docker-run: docker-build
 docker-logs:
 	docker-compose logs -f
 
+k8s-deploy:
+	devops/k8s/deploy.sh
+
+k8s-undeploy:
+	devops/k8s/undeploy.sh
+
 test-unit:
 	cd ./listener;go test -v -race -count=1 ./internal/...
 	cd ./publisher;go test -v -race -count=1 ./internal/...
+
 

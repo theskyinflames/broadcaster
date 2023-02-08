@@ -7,25 +7,31 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/theskyinflames/cqrs-eda/pkg/ddd"
+	"github.com/theskyinflames/cqrs-eda/pkg/events"
 )
 
 // Subscriber is self-described
 type Subscriber struct {
-	ddd.AggregateBasic
+	ab ddd.AggregateBasic
 	net.Conn
 }
 
 // NewSubscriber is a constructor
 func NewSubscriber(ID uuid.UUID, conn net.Conn) Subscriber {
 	return Subscriber{
-		AggregateBasic: ddd.NewAggregateBasic(ID),
-		Conn:           conn,
+		ab:   ddd.NewAggregateBasic(ID),
+		Conn: conn,
 	}
+}
+
+// ID returns the underlying ddd.AggregateBasic ID
+func (s Subscriber) ID() uuid.UUID {
+	return s.ab.ID()
 }
 
 // Subscribers is the set of subscribers
 type Subscribers struct {
-	ddd.AggregateBasic
+	ab          ddd.AggregateBasic
 	mux         *sync.RWMutex
 	subscribers map[uuid.UUID]Subscriber
 }
@@ -33,10 +39,15 @@ type Subscribers struct {
 // NewSubscribers is a constructor
 func NewSubscribers(ID uuid.UUID) Subscribers {
 	return Subscribers{
-		AggregateBasic: ddd.NewAggregateBasic(ID),
-		mux:            &sync.RWMutex{},
-		subscribers:    make(map[uuid.UUID]Subscriber),
+		ab:          ddd.NewAggregateBasic(ID),
+		mux:         &sync.RWMutex{},
+		subscribers: make(map[uuid.UUID]Subscriber),
 	}
+}
+
+// Events returns subscribers events
+func (s Subscribers) Events() []events.Event {
+	return s.ab.Events()
 }
 
 // Add adds a new subscriber
@@ -46,7 +57,7 @@ func (s *Subscribers) Add(subscriber Subscriber) {
 
 	s.subscribers[subscriber.ID()] = subscriber
 
-	s.RecordEvent(NewSubscriberAddedEvent(subscriber.ID()))
+	s.ab.RecordEvent(NewSubscriberAddedEvent(subscriber.ID()))
 }
 
 // Remove removes a subscriber
@@ -57,7 +68,7 @@ func (s *Subscribers) Remove(conn net.Conn) {
 	for _, subscriber := range s.subscribers {
 		if subscriber.Conn.RemoteAddr().String() == conn.RemoteAddr().String() {
 			delete(s.subscribers, subscriber.ID())
-			s.RecordEvent(NewSubscriberRemovedEvent(subscriber.ID()))
+			s.ab.RecordEvent(NewSubscriberRemovedEvent(subscriber.ID()))
 		}
 	}
 }

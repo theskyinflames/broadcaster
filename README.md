@@ -1,4 +1,4 @@
-# The Core-Tech Challenge - Broadcaster
+# Tech Challenge - Broadcaster
 This code challenge consist on to implement two services following these instructions:
 ```
 ## Create two microservices for real time messages using websockets, and at least one demo subscriber.

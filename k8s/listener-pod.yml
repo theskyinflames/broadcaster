@@ -31,6 +31,7 @@ spec:
         name: broadcaster-listener
         ports:
         - containerPort: 80
+          name: http
         env:
         - name: AUTH_USER
           valueFrom:
@@ -61,4 +62,12 @@ spec:
             limits:
               cpu: "1"
               memory: "100M"
+        livenessProbe:
+          httpGet:
+            path: /status
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /status
+            port: http
       restartPolicy: Always
